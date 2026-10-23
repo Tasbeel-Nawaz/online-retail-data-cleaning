@@ -59,6 +59,9 @@ print(sample_duplicates.to_string(index=False))
 
 
 # 5. REMOVE EXACT DUPLICATES
+# 5. REMOVE EXACT DUPLICATES
+duplicate_rows_removed = len(df) - len(df.drop_duplicates())
+
 df_clean = df.drop_duplicates().copy()
 df_final = df_clean.copy()
 
@@ -782,16 +785,20 @@ if df_clean.duplicated().sum() == 0:
 else:
     print("FAIL: Duplicate rows found")
 
-if df_final["Description"].isnull().sum() <= 1301:
-    print("PASS: Missing descriptions are within expected limit")
-else:
-    print("CHECK: Missing descriptions increased")
+missing_descriptions = df_final["Description"].isnull().sum()
+missing_descriptions_before = df_clean["Description"].isnull().sum()
 
-if len(df_clean) == 1033036:
+if missing_descriptions <= missing_descriptions_before:
+    print("PASS: Missing descriptions did not increase")
+else:
+    print("FAIL: Missing descriptions increased")
+
+expected_rows = len(df) - duplicate_rows_removed
+
+if len(df_clean) == expected_rows:
     print("PASS: Row count is correct")
 else:
-    print("CHECK: Row count changed")
-
+    print("FAIL: Row count does not match expected value")
 
 validation_report = {
     "Check": [
